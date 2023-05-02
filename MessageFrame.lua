@@ -34,3 +34,21 @@ function CritlineClassic.ShowNewNormalMessage(spellName, amount)
   CritlineClassicMessageFrame:Show()
   C_Timer.After(5, function() CritlineClassicMessageFrame:Hide() end)
 end
+
+function CritlineClassic.ShowNewHealMessage(spellName, amount)
+  if not CritlineClassicMessageFrame then
+    CritlineClassicMessageFrame = CritlineClassic.CreateMessageFrame()
+  end
+  CritlineClassicMessageFrame.text:SetText(string.format("New %s normal heal record: %d!", spellName, amount))
+  CritlineClassicMessageFrame:Show()
+  C_Timer.After(5, function() CritlineClassicMessageFrame:Hide() end)
+end
+
+function CritlineClassic.ShowNewHealCritMessage(spellName, amount)
+  if not CritlineClassicMessageFrame then
+    CritlineClassicMessageFrame = CritlineClassic.CreateMessageFrame()
+  end
+  CritlineClassicMessageFrame.text:SetText(string.format("New %s crit heal: %d!", spellName, amount))
+  CritlineClassicMessageFrame:Show()
+  C_Timer.After(5, function() CritlineClassicMessageFrame:Hide() end)
+end

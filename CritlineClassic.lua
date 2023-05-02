@@ -54,28 +54,58 @@ f:SetScript("OnEvent", function(self, event)
   -- Get information about the combat event.
   local timestamp, eventType, _, sourceGUID, _, _, _, destGUID, _, _, _, spellID, _, _, amount, overkill, _, _, _, _, critical = CombatLogGetCurrentEventInfo()
 
-  -- Check if the event is a player hit and update the highest hits data if needed.
-  if sourceGUID == UnitGUID("player") and destGUID ~= UnitGUID("player") and (eventType == "SPELL_DAMAGE" or eventType == "SWING_DAMAGE" or eventType == "RANGE_DAMAGE") and amount > 0 then
-    local spellName, _, spellIcon = GetSpellInfo(spellID)
+  if eventType == "SWING_DAMAGE" then
+    amount = spellID
+    spellName = "Auto Attack"
+    spellIcon = 6603 -- or specify the path to a melee icon, if you have one
+  else
+    spellName, _, spellIcon = GetSpellInfo(spellID)
+  end
+
+  -- Check if the event is a player hit or a player heal and update the highest hits/heals data if needed.
+  if sourceGUID == UnitGUID("player") and destGUID ~= UnitGUID("player") and 
+    (eventType == "SPELL_DAMAGE" or eventType == "SWING_DAMAGE" or eventType == "RANGE_DAMAGE" or eventType == "SPELL_HEAL" or eventType == "SPELL_PERIODIC_HEAL") 
+    and amount > 0 then
+
     if spellName then
       CritlineClassicData[spellName] = CritlineClassicData[spellName] or {
         highestCrit = 0,
         highestNormal = 0,
+        highestHeal = 0,
+        highestHealCrit = 0,
         spellIcon = spellIcon,
       }
       if critical then
-        if amount > CritlineClassicData[spellName].highestCrit then
-          CritlineClassicData[spellName].highestCrit = amount
-          PlaySound(5274, "SFX")
-          CritlineClassic.ShowNewCritMessage(spellName , amount)
-          print("New highest crit hit for " .. spellName .. ": " .. CritlineClassicData[spellName].highestCrit)
+        if eventType == "SPELL_HEAL" or eventType == "SPELL_PERIODIC_HEAL" then
+          if amount > CritlineClassicData[spellName].highestHealCrit then
+            CritlineClassicData[spellName].highestHealCrit = amount
+            PlaySound(5274, "SFX")
+            CritlineClassic.ShowNewHealCritMessage(spellName , amount)
+            print("New highest crit heal for " .. spellName .. ": " .. CritlineClassicData[spellName].highestHealCrit)
+          end
+        else
+          if amount > CritlineClassicData[spellName].highestCrit then
+            CritlineClassicData[spellName].highestCrit = amount
+            PlaySound(5274, "SFX")
+            CritlineClassic.ShowNewCritMessage(spellName , amount)
+            print("New highest crit hit for " .. spellName .. ": " .. CritlineClassicData[spellName].highestCrit)
+          end
         end
       else
-        if amount > CritlineClassicData[spellName].highestNormal then
-          CritlineClassicData[spellName].highestNormal = amount
-          PlaySound(5274, "SFX")
-          CritlineClassic.ShowNewNormalMessage(spellName , amount)
-          print("New highest normal hit for " .. spellName .. ": " .. CritlineClassicData[spellName].highestNormal)
+        if eventType == "SPELL_HEAL" or eventType == "SPELL_PERIODIC_HEAL" then
+          if amount > CritlineClassicData[spellName].highestHeal then
+            CritlineClassicData[spellName].highestHeal = amount
+            PlaySound(5274, "SFX")
+            CritlineClassic.ShowNewHealMessage(spellName , amount)
+            print("New highest normal heal for " .. spellName .. ": " .. CritlineClassicData[spellName].highestHeal)
+          end
+        else
+          if amount > CritlineClassicData[spellName].highestNormal then
+            CritlineClassicData[spellName].highestNormal = amount
+            PlaySound(5274, "SFX")
+            CritlineClassic.ShowNewNormalMessage(spellName , amount)
+            print("New highest normal hit for " .. spellName .. ": " .. CritlineClassicData[spellName].highestNormal)
+          end
         end
       end
     end
@@ -89,7 +119,6 @@ local function OnLoad(self, event)
   CritlineClassicData = _G["CritlineClassicData"]
   
   -- Add the highest hits data to the spell button tooltip.
-  --GameTooltip:HookScript("OnTooltipSetSpell", OnTooltipSetSpell)
   hooksecurefunc(GameTooltip, "SetAction", AddHighestHitsToTooltip)
 end
 local frame = CreateFrame("FRAME")
