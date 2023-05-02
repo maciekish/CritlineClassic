@@ -80,9 +80,6 @@ f:SetScript("OnEvent", function(self, event)
       end
     end
   end
-
-  --Reset for debugging
-  --CritlineClassicData = {}
 end)
 
 -- Register an event that fires when the addon is loaded.
@@ -113,7 +110,7 @@ local function ResetData()
   print("Critline Classic data reset.")
 end
 
-SLASH_CRITLINERESET1, SLASH_CRITLINERESET2 = '/critline reset', '/clreset'
+SLASH_CRITLINERESET1, SLASH_CRITLINERESET2 = '/clreset'
 function SlashCmdList.CRITLINERESET(msg, editBox)
     ResetData()
 end
