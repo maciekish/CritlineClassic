@@ -1,11 +1,11 @@
 ## Interface: 30401
 ## Title: Critline Classic
 ## Author: Your Name
-## Version: 1.0.0
+## Version: 1.0.1
 ## Notes: Records the highest critical hit for the player.
 ## DefaultState: enabled
 ## SavedVariablesPerCharacter: CritlineClassicData
 
-NameSpace.lua
+Namespace.lua
 MessageFrame.lua
 CritlineClassic.lua

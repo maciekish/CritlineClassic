@@ -1,17 +1,33 @@
 -- Define a table to hold the highest hits data.
 CritlineClassicData = CritlineClassicData or {}
 
+local function GetGCD()
+  local _, gcdDuration = GetSpellCooldown(78) -- 78 is the spell ID for Warrior's Heroic Strike
+  if gcdDuration == 0 then
+    return 1.5 -- Default GCD duration if not available (you may adjust this value if needed)
+  else
+    return gcdDuration
+  end
+end
+
 local function AddHighestHitsToTooltip(self, slot)
   if (not slot) then return end
 
   local actionType, id = GetActionInfo(slot)
   if actionType == "spell" then
-    local spellName = GetSpellInfo(id)
+    local spellName, _, _, castTime = GetSpellInfo(id)
     if CritlineClassicData[spellName] then
+      local cooldown = (GetSpellBaseCooldown(id) or 0) / 1000
+      local effectiveCastTime = castTime > 0 and (castTime / 1000) or GetGCD()
+      local effectiveTime = max(effectiveCastTime, cooldown)
+
+      local critDPS = CritlineClassicData[spellName].highestCrit / effectiveTime
+      local normalDPS = CritlineClassicData[spellName].highestNormal / effectiveTime
+
       local critLineLeft = "Highest Crit: "
-      local critLineRight = tostring(CritlineClassicData[spellName].highestCrit)
+      local critLineRight = tostring(CritlineClassicData[spellName].highestCrit) .. " (" .. format("%.1f", critDPS) .. " DPS)"
       local normalLineLeft = "Highest Normal: "
-      local normalLineRight = tostring(CritlineClassicData[spellName].highestNormal)
+      local normalLineRight = tostring(CritlineClassicData[spellName].highestNormal) .. " (" .. format("%.1f", normalDPS) .. " DPS)"
 
       -- Check if lines are already present in the tooltip.
       local critLineExists = false
@@ -139,7 +155,7 @@ local function ResetData()
   print("Critline Classic data reset.")
 end
 
-SLASH_CRITLINERESET1, SLASH_CRITLINERESET2 = '/clreset'
+SLASH_CRITLINERESET1 = '/clreset'
 function SlashCmdList.CRITLINERESET(msg, editBox)
     ResetData()
 end

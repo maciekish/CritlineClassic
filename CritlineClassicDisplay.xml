@@ -1,0 +1,26 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ http://wowprogramming.com/FrameXML/UI.xsd">
+  <Frame name="CritlineClassicDisplay" parent="UIParent" toplevel="true" enableMouse="true" movable="true" inherits="BackdropTemplate">
+        <Size>
+             <AbsDimension x="100" y="75"/>
+        </Size>
+        <KeyValues>
+            <KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+        </KeyValues>
+    <Anchors>
+      <Anchor point="CENTER" relativePoint="CENTER"/>
+    </Anchors>
+    <Scripts>
+      <OnLoad inherit="prepend">
+        print("Frame Loaded")
+      </OnLoad>
+      <OnMouseDown>
+        if (button == "LeftButton") then
+          CritlineClassicDisplay:StartMoving()
+        end
+      </OnMouseDown>
+      <OnMouseUp>
+        CritlineClassicDisplay:StopMovingOrSizing()
+      </OnMouseUp>
+    </Scripts>
+  </Frame>
+</Ui>
